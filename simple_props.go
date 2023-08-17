@@ -45,7 +45,8 @@ func LoadProps(filepath string) (*Props, error) {
 		return nil, regError
 	}
 
-	regParser, regError := regexp.Compile(`^\s*([^=]*)\s*=\s*(.*)\s*$`)
+	//regParser, regError := regexp.Compile(`^\s*([^=]*)\s*=\s*(.*)\s*$`)
+	regParser, regError := regexp.Compile(`(?sm)^\s*([^\n]*)\s*=\s*([^\n]*)\s*$`)
 
 	if regError != nil {
 		return nil, regError
