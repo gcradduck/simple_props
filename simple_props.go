@@ -5,6 +5,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 type Props struct {
@@ -13,6 +14,22 @@ type Props struct {
 
 func (p *Props) Get(key string) string {
 	return (p.Props[key]).(string)
+}
+
+func (p *Props) GetCleanFilePath(key string) string {
+	filePath := p.Get(key)
+
+	filePath = strings.TrimSpace(filePath)
+	if filePath == "" {
+		return ""
+	}
+
+	filePath = filePath + string(os.PathSeparator)
+
+	doubleSeparator := string(os.PathSeparator) + string(os.PathSeparator)
+	filePath = strings.ReplaceAll(filePath, doubleSeparator, string(os.PathSeparator))
+
+	return filePath
 }
 
 func (p *Props) GetInt(key string, defaultValue int) int {
