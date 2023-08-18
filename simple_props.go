@@ -62,7 +62,6 @@ func LoadProps(filepath string) (*Props, error) {
 		return nil, regError
 	}
 
-	//regParser, regError := regexp.Compile(`^\s*([^=]*)\s*=\s*(.*)\s*$`)
 	regParser, regError := regexp.Compile(`(?sm)^\s*([^\n]*)\s*=\s*([^\n]*)\s*$`)
 
 	if regError != nil {
@@ -84,7 +83,7 @@ func LoadProps(filepath string) (*Props, error) {
 		key := parseMatches[0][1]
 		value := parseMatches[0][2]
 
-		props.Props[key] = value
+		props.Props[key] = strings.TrimSpace(value)
 
 	}
 
