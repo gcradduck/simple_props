@@ -8,14 +8,23 @@ import (
 	"strings"
 )
 
+// Props struct captures a map of key strings to any values.
 type Props struct {
 	Props map[string]any
 }
 
+// Get returns string property value mapped to the provided string.
 func (p *Props) Get(key string) string {
+	v := p.Props[key]
+
+	if v == nil {
+		return ""
+	}
+
 	return (p.Props[key]).(string)
 }
 
+// GetCleanFilePath returns a "cleaned" filepath, ensuring system file separator is never duplicated.
 func (p *Props) GetCleanFilePath(key string) string {
 	filePath := p.Get(key)
 
@@ -24,14 +33,21 @@ func (p *Props) GetCleanFilePath(key string) string {
 		return ""
 	}
 
-	filePath = filePath + string(os.PathSeparator)
-
 	doubleSeparator := string(os.PathSeparator) + string(os.PathSeparator)
-	filePath = strings.ReplaceAll(filePath, doubleSeparator, string(os.PathSeparator))
+
+	present := strings.Contains(filePath, doubleSeparator)
+
+	for present {
+
+		filePath = strings.ReplaceAll(filePath, doubleSeparator, string(os.PathSeparator))
+		present = strings.Contains(filePath, doubleSeparator)
+
+	}
 
 	return filePath
 }
 
+// GetInt returns int property value mapped to the provided string
 func (p *Props) GetInt(key string, defaultValue int) int {
 	x, err := strconv.Atoi(p.Get(key))
 
@@ -42,6 +58,7 @@ func (p *Props) GetInt(key string, defaultValue int) int {
 	return x
 }
 
+// LoadProps loads a Props struct by way of a provided filepath/name.
 func LoadProps(filepath string) (*Props, error) {
 
 	props := &Props{
