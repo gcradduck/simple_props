@@ -2,10 +2,12 @@ package simple_props
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Props struct captures a map of key strings to any values.
@@ -74,6 +76,48 @@ func (p *Props) GetBool(key string, defaultValue bool) bool {
 		return true
 	default:
 		return defaultValue
+	}
+
+}
+
+// GetDate returns a date value mapped to the provided properties key/string. Format directive is expected; e.g., dateProperty=08/21/2023 format:MM/DD/YYYY
+func (p *Props) GetDate(key string) (time.Time, error) {
+
+	stringValue := p.Get(key)
+
+	if stringValue == "" {
+		return time.Now(), fmt.Errorf("error reading date property from properties file - no such key %s", key)
+	}
+
+	dateReg, regErr := regexp.Compile(`(?i)^(.*?)\s*format:(.*)$`)
+
+	if regErr != nil {
+		return time.Now(), regErr
+	}
+
+	matches := dateReg.FindAllStringSubmatch(stringValue, -1)
+
+	if len(matches) == 0 || len(matches[0]) < 3 {
+		return time.Now(), fmt.Errorf("attempted to match improperly formed date property for key: %s", key)
+	}
+
+	dateVal := strings.TrimSpace(matches[0][1])
+	dateFormat := strings.TrimSpace(matches[0][2])
+
+	switch dateFormat {
+	case "YYYY-MM-DD":
+		return time.Parse("2006-01-02", dateVal)
+	case "YYYY-M-D":
+		return time.Parse("2006-1-2", dateVal)
+	case "YYYYMMDD":
+		return time.Parse("20060102", dateVal)
+	case "MM/DD/YYYY":
+		return time.Parse("01/02/2006", dateVal)
+	case "M/D/YYYY":
+		return time.Parse("1/2/2006", dateVal)
+
+	default:
+		return time.Now(), fmt.Errorf("failed to match date format %s for key %s", dateFormat, key)
 	}
 
 }

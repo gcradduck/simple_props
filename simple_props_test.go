@@ -163,3 +163,28 @@ func TestGetBool(t *testing.T) {
 		t.Errorf("key %s expected bool %v but got %v", "nonexistentboolkey", expectedValue, gotValue)
 	}
 }
+
+// TestGetDate tests the GetDate function.
+func TestGetDate(t *testing.T) {
+
+	props, gotErr := LoadProps("test_properties.properties")
+	if gotErr != nil {
+		t.Error("got error when calling LoadProps", gotErr)
+	}
+
+	key := "dateKey1"
+	expectedValue := "20230821"
+	x, _ := props.GetDate(key)
+	s := x.Format("20060102")
+
+	if s != expectedValue {
+		t.Errorf("key %s expected value %s but got %s", key, expectedValue, s)
+	}
+
+	key = "dateKey3"
+	_, err3 := props.GetDate(key)
+	if err3 == nil {
+		t.Errorf("key %s should produce an error but did not", key)
+	}
+
+}
