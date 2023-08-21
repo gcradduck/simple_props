@@ -58,6 +58,26 @@ func (p *Props) GetInt(key string, defaultValue int) int {
 	return x
 }
 
+// GetBool returns bool property value mapped to the provided string; TRUE values include [TRUE,true,YES,yes,Y,y,1]; all other values represent FALSE.
+func (p *Props) GetBool(key string, defaultValue bool) bool {
+
+	stringValue := strings.ToUpper(p.Get(key))
+
+	switch stringValue {
+	case "TRUE":
+		return true
+	case "YES":
+		return true
+	case "Y":
+		return true
+	case "1":
+		return true
+	default:
+		return defaultValue
+	}
+
+}
+
 // LoadProps loads a Props struct by way of a provided filepath/name.
 func LoadProps(filepath string) (*Props, error) {
 
